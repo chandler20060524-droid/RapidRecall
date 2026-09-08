@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">RapidRecall</string>
+    <string name="greet">Welcome to Rapid Recall!</string>
+    <string name="seq_length">Current Sequence Length: </string>
+    <string name="very_easy">😇 Very Easy!</string>
+    <string name="easy">😊 Easy!</string>
+    <string name="medium">😝 Medium!</string>
+    <string name="hard">🫢 Hard!</string>
+    <string name="hardcore">🤯 Hardcore!</string>
+    <string name="start">Start</string>
+    <string name="game">Game</string>
+    <string name="summary">Summary</string>
+    <string name="correct_recall">✅ That is correct!</string>
+    <string name="wrong_recall">❌ That is incorrect!</string>
+    <string name="enter_your_word">Enter your Answer</string>
+    <string name="remember_the_sequence">Remember Them All!</string>
+    <string name="are_you_ready">Are You Ready?</string>
+    <string name="go">Go!</string>
+    <string name="do_you_recall">🤔 Do you recall?</string>
+</resources>
