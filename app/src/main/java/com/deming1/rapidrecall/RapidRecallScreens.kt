@@ -9,8 +9,13 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.NavHost
 import androidx.annotation.StringRes
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.composable
 import com.deming1.rapidrecall.ui.GameScreen
@@ -48,15 +53,38 @@ fun RapidRecallApp(
         }
 
         composable(route = RapidRecallScreens.Game.name) {
+            LaunchedEffect(Unit) {
+                gameViewModel.startGame()
+            }
+            val currentStep by gameViewModel.gameStepState.collectAsStateWithLifecycle()
+            var currentText by rememberSaveable { mutableStateOf("") }
+            currentText = when (currentStep) {
+                is GameStep.PreGameStep -> stringResource((currentStep as GameStep.PreGameStep).stringId)
+                is GameStep.FlashSequenceStep -> (currentStep as GameStep.FlashSequenceStep).seqText
+            }
+
+            val allowInput = when (currentStep) {
+                GameStep.PreGameStep(R.string.do_you_recall) -> true
+                else -> false
+            }
 
             GameScreen(
                 gameViewModel = gameViewModel,
                 sequence = gameUiState.currentSequence,
                 seqLen = gameUiState.currentDigits,
-                onUserInputChange = { gameViewModel.updateUserInput(it) },
+                currentText = currentText,
+                allowInput = allowInput,
+                onUserInputChange = { userInput ->
+                    if (userInput.length <= gameUiState.currentDigits && userInput.all { it.isDigit() }) {
+                        gameViewModel.updateUserInput(userInput)
+                    }
+                },
                 correctRecall = gameUiState.correct,
                 wrongRecall = gameUiState.wrong,
-                onKeyboardDone = { gameViewModel.checkUserInput() },
+                onKeyboardDone = {
+                    gameViewModel.checkUserInput()
+                    allowInput = false
+                                 },
             )
         }
 

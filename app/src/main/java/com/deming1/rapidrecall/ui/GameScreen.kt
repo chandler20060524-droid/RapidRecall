@@ -39,12 +39,15 @@ import android.content.Context
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalResources
 import com.deming1.rapidrecall.GameStep
+import androidx.compose.material3.Button
 
 @Composable
 fun GameScreen(
     gameViewModel: GameViewModel,
     sequence: String,
     seqLen: Int,
+    currentText: String,
+    allowInput: Boolean,
     onUserInputChange: (String) -> Unit,
     correctRecall: Boolean,
     wrongRecall: Boolean,
@@ -52,21 +55,6 @@ fun GameScreen(
     modifier: Modifier = Modifier
 ) {
     val userInput = gameViewModel.userInput
-    var currentText by rememberSaveable { mutableStateOf("") }
-
-    LaunchedEffect(Unit) {
-        gameViewModel.startGame()
-    }
-    val currentStep by gameViewModel.gameStepState.collectAsStateWithLifecycle()
-    currentText = when (currentStep) {
-        is GameStep.PreGameStep -> stringResource((currentStep as GameStep.PreGameStep).stringId)
-        is GameStep.FlashSequenceStep -> (currentStep as GameStep.FlashSequenceStep).seqText
-    }
-
-    val allowInput = when (currentStep) {
-        GameStep.PreGameStep(R.string.do_you_recall) -> true
-        else -> false
-    }
 
     Column(
         modifier = modifier
@@ -104,6 +92,16 @@ fun GameScreen(
                 onDone = { onKeyboardDone() }
             )
         )
+        Spacer(modifier = modifier.height(25.dp))
+        Button(
+            onClick = { onKeyboardDone() },
+            modifier = modifier
+        ) {
+            Text(
+                text = stringResource(R.string.submit),
+                fontSize = 20.sp
+            )
+        }
     }
 }
 
@@ -115,6 +113,8 @@ fun GameScreenPreview() {
             gameViewModel = viewModel(),
             sequence = "0123456789",
             seqLen = 10,
+            currentText = "Test",
+            allowInput = false,
             onUserInputChange = {},
             correctRecall = false,
             wrongRecall = false,
