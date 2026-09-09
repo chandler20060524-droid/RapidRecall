@@ -1,4 +1,4 @@
-package com.deming1.rapidrecall
+package com.deming1.rapidrecall.ui
 
 import androidx.compose.ui.text.AnnotatedString
 

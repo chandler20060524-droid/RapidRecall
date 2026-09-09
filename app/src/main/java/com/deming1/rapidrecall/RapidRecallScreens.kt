@@ -2,26 +2,13 @@ package com.deming1.rapidrecall
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.NavHost
 import androidx.annotation.StringRes
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.composable
@@ -29,6 +16,7 @@ import com.deming1.rapidrecall.ui.GameScreen
 import com.deming1.rapidrecall.ui.StartScreen
 import androidx.compose.ui.text.AnnotatedString
 import com.deming1.rapidrecall.ui.SummaryScreen
+import com.deming1.rapidrecall.ui.TextStep
 
 enum class RapidRecallScreens(@StringRes val title: Int) {
     Start(title = R.string.start),
@@ -68,7 +56,7 @@ fun RapidRecallApp(
             LaunchedEffect(Unit) {
                 gameViewModel.startGame()
             }
-            val currentStep by gameViewModel.gameStepState.collectAsStateWithLifecycle(TextStep.StringIdStep(R.string.greet))
+            val currentStep by gameViewModel.gameStepState.collectAsStateWithLifecycle(TextStep.StringIdStep(R.string.remember_the_sequence))
 
             gameViewModel.updateCurrentText(
                 when (currentStep) {
@@ -106,8 +94,10 @@ fun RapidRecallApp(
                 percentage = if (gameUiState.totalDigits == 0) {
                         0.0f
                 } else {
-                    (gameUiState.totalCorrectDigits / gameUiState.totalDigits).toFloat()
+                    gameUiState.totalCorrectDigits / gameUiState.totalDigits
                 },
+                correctAttempt = gameUiState.correctAttempts,
+                totalAttempt = gameUiState.totalAttempts,
                 previousAttempts = gameUiState.previousAttempts,
                 onBackButtonClicked = {
                     navController.navigate(RapidRecallScreens.Start.name)

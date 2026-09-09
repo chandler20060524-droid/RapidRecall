@@ -1,6 +1,5 @@
 package com.deming1.rapidrecall
 
-import android.content.Context
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +20,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.graphics.Color
-import android.util.Log
+import com.deming1.rapidrecall.ui.TextStep
 
 class GameViewModel: ViewModel() {
     private val TAG = "GameViewModel"
@@ -116,10 +115,13 @@ class GameViewModel: ViewModel() {
                 currentCorrectDigits = correctDigits,
                 totalCorrectDigits = currentState.totalCorrectDigits + correctDigits,
                 previousAttempts = currentState.previousAttempts + AttemptData(
+                    userInput = userInput,
                     sequence = currentText,
                     correctDigits = correctDigits,
                     totalDigits = seqLen
-                )
+                ),
+                correctAttempts = currentState.correctAttempts + if (isCorrect) 1 else 0,
+                totalAttempts = currentState.totalAttempts + 1
             )
         }
         _gameStepState.value = TextStep.StringStep(currentText)
@@ -166,6 +168,6 @@ class GameViewModel: ViewModel() {
     }
 
     fun resetCurrentText() {
-        _gameStepState.value = TextStep.StringIdStep(R.string.greet)
+        _gameStepState.value = TextStep.StringIdStep(R.string.remember_the_sequence)
     }
 }

@@ -21,4 +21,6 @@
     <string name="Return">Return</string>
     <string name="overall_acc">🎯 Overall Accuracy:</string>
     <string name="previous_attempts">🏒 Previous Attempts:</string>
+    <string name="correct_attempt">Correct Attempts:</string>
+    <string name="total_attempt">Total Attempts:</string>
 </resources>

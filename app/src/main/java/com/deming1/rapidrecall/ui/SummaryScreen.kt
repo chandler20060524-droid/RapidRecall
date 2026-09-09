@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Alignment
 import androidx.compose.material3.CircularProgressIndicator
@@ -18,12 +19,9 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.material3.Text
 import androidx.compose.ui.tooling.preview.Preview
-import com.deming1.rapidrecall.RapidRecallScreens
 import com.deming1.rapidrecall.ui.theme.RapidRecallTheme
 import androidx.compose.foundation.layout.size
-import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.res.stringResource
 import com.deming1.rapidrecall.R
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -33,17 +31,19 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
-import androidx.compose.material.icons.filled.History
 import com.deming1.rapidrecall.AttemptData
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.foundation.layout.Row
 
 @Composable
 fun SummaryScreen(
     modifier: Modifier = Modifier,
     percentage: Float = 0.0f,
+    correctAttempt: Int,
+    totalAttempt: Int,
     onBackButtonClicked: () -> Unit = {},
     previousAttempts: List<AttemptData> = listOf()
 ) {
@@ -61,12 +61,12 @@ fun SummaryScreen(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
-            .fillMaxSize()
+            .fillMaxHeight()
             .padding(
                 top = 50.dp,
                 start = 30.dp,
                 end = 30.dp,
-                bottom = 30.dp)
+                bottom = 40.dp)
     ) {
         Column(
             modifier = modifier
@@ -77,22 +77,27 @@ fun SummaryScreen(
                 text = stringResource(R.string.overall_acc),
                 fontSize = 20.sp
             )
-            Box(
-                contentAlignment = Alignment.Center,
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(0.3f)
             ) {
                 PercentageRing(
                     percentage = percentage,
-                    modifier = modifier.size(180.dp)
+                    modifier = modifier.size(160.dp).fillMaxWidth(0.5f)
+                )
+                Spacer(modifier = modifier.width(5.dp))
+                Text(
+                    text = "${stringResource(R.string.correct_attempt)}\n${correctAttempt}\n\n${stringResource(R.string.total_attempt)}\n${totalAttempt}",
+                    fontSize = 20.sp
                 )
             }
         }
         Column(
             modifier = modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.6f)
+                .fillMaxHeight()
         ) {
             Text(
                 text = stringResource(R.string.previous_attempts),
@@ -100,7 +105,7 @@ fun SummaryScreen(
             )
             Spacer(modifier = modifier.height(10.dp))
             LazyColumn(
-                modifier = modifier
+                modifier = modifier.fillMaxSize()
             ) {
                 itemsIndexed(
                     items = previousAttempts
@@ -115,7 +120,8 @@ fun SummaryScreen(
                             text = buildAnnotatedString {
                                 append("Attempt ${index + 1}: ")
                                 append(item.sequence)
-                                append(" Score: ${item.correctDigits}/${item.totalDigits}")
+                                append("\nYour Answer: ${item.userInput}")
+                                append("\nScore: ${item.correctDigits}/${item.totalDigits}")
                             }
                         )
                     }
@@ -160,33 +166,27 @@ fun PercentageRing(
 @Composable
 fun SummaryScreenPreview() {
     RapidRecallTheme() {
+        val pa = mutableListOf<AttemptData>()
+        for (i in 0..20) {
+            pa.add(AttemptData(
+                userInput = "1234512345",
+                sequence = buildAnnotatedString {
+                    withStyle(style = SpanStyle(color = Color.Green)) {
+                        append("12345")
+                    }
+                    withStyle(style = SpanStyle(color = Color.Red)) {
+                        append("67890")
+                    }
+                },
+                correctDigits = 5,
+                totalDigits = 10
+            ))
+        }
         SummaryScreen(
-            previousAttempts = listOf(
-                AttemptData(
-                    sequence = buildAnnotatedString {
-                        withStyle(style = SpanStyle(color = Color.Green)) {
-                            append("12345")
-                        }
-                        withStyle(style = SpanStyle(color = Color.Red)) {
-                            append("67890")
-                        }
-                    },
-                    correctDigits = 5,
-                    totalDigits = 10
-                ),
-                AttemptData(
-                    sequence = buildAnnotatedString {
-                        withStyle(style = SpanStyle(color = Color.Green)) {
-                            append("12345")
-                        }
-                        withStyle(style = SpanStyle(color = Color.Red)) {
-                            append("67890")
-                        }
-                    },
-                    correctDigits = 5,
-                    totalDigits = 10
-                ),
-            )
+            percentage = 0.5f,
+            correctAttempt = 0,
+            totalAttempt = 10,
+            previousAttempts = pa
         )
     }
 }
