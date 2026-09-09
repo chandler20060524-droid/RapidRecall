@@ -21,10 +21,15 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.graphics.Color
 import com.deming1.rapidrecall.ui.TextStep
+import kotlin.time.Clock
+import kotlin.time.Instant
+import kotlin.time.ExperimentalTime
 
 class GameViewModel: ViewModel() {
     private val TAG = "GameViewModel"
 
+    @OptIn(ExperimentalTime::class)
+    val currentInstant: Instant = Clock.System.now()
     private val _uiState = MutableStateFlow(GameUiState())
     val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
     var userInput by mutableStateOf("")
@@ -47,6 +52,7 @@ class GameViewModel: ViewModel() {
         }
     }
 
+    @OptIn(ExperimentalTime::class)
     fun generateSequence(seqLen: Int) {
         val sb = StringBuilder()
         for (i in 1..seqLen) {
@@ -59,6 +65,7 @@ class GameViewModel: ViewModel() {
                 correct = false,
                 wrong = false,
                 currentSequence = sb.toString(),
+                currentTime = currentInstant.toString(),
                 currentDigits = seqLen,
                 totalDigits = currentState.totalDigits + seqLen
             )
@@ -115,6 +122,7 @@ class GameViewModel: ViewModel() {
                 currentCorrectDigits = correctDigits,
                 totalCorrectDigits = currentState.totalCorrectDigits + correctDigits,
                 previousAttempts = currentState.previousAttempts + AttemptData(
+                    time = _uiState.value.currentTime,
                     userInput = userInput,
                     sequence = currentText,
                     correctDigits = correctDigits,

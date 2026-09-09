@@ -6,6 +6,7 @@ import com.deming1.rapidrecall.AttemptData
 * This class is designed to store */
 data class GameUiState(
     val currentSequence: String = "",
+    val currentTime: String = "",
     val correct: Boolean = false,
     val wrong: Boolean = false,
     val currentCorrectDigits: Int = 0,
