@@ -26,11 +26,17 @@ import com.deming1.rapidrecall.R
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.deming1.rapidrecall.ui.theme.RapidRecallTheme
+import androidx.compose.material3.IconButton
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.History
 
 @Composable
 fun StartScreen(
-    modifier: Modifier = Modifier,
-    onStartButtonClicked: (Int) -> Unit = {},
+    onStartButtonClicked: (Int) -> Unit,
+    onSummaryIconClicked: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     var seqLen by rememberSaveable() { mutableStateOf(1) }
     val seqLenHint = stringResource(R.string.seq_length) + seqLen.toString()
@@ -67,6 +73,17 @@ fun StartScreen(
         Color.White
     }
 
+    Box {
+        IconButton(
+            onClick = onSummaryIconClicked,
+            modifier = Modifier.align(Alignment.TopStart)
+        ) {
+            Icon(
+                imageVector = Icons.Default.History,
+                contentDescription = "History"
+            )
+        }
+    }
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -113,6 +130,9 @@ fun StartScreen(
 @Composable
 fun StartScreenPreview() {
     RapidRecallTheme() {
-        StartScreen()
+        StartScreen(
+            onStartButtonClicked = {},
+            onSummaryIconClicked = {}
+        )
     }
 }

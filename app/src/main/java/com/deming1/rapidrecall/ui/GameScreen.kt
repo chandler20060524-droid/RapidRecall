@@ -38,20 +38,19 @@ import kotlinx.coroutines.flow.flow
 import android.content.Context
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalResources
-import com.deming1.rapidrecall.GameStep
+import com.deming1.rapidrecall.TextStep
 import androidx.compose.material3.Button
 
 @Composable
 fun GameScreen(
     gameViewModel: GameViewModel,
-    sequence: String,
-    seqLen: Int,
-    currentText: String,
-    allowInput: Boolean,
     onUserInputChange: (String) -> Unit,
+    correctDigits: Int,
+    currentDigits: Int,
     correctRecall: Boolean,
     wrongRecall: Boolean,
-    onKeyboardDone: () -> Unit,
+    onSubmit: () -> Unit,
+    onReturn: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val userInput = gameViewModel.userInput
@@ -64,7 +63,7 @@ fun GameScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = currentText,
+            text = gameViewModel.currentText,
             fontSize = 35.sp,
             modifier = modifier
         )
@@ -76,29 +75,48 @@ fun GameScreen(
             onValueChange = onUserInputChange,
             label = {
                 if (correctRecall) {
-                    Text(stringResource(R.string.correct_recall))
+                    Text(
+                        text = stringResource(R.string.correct_recall) + " $correctDigits/$currentDigits",
+                        fontSize = 20.sp
+                    )
                 } else if (wrongRecall) {
-                    Text(stringResource(R.string.wrong_recall))
+                    Text(
+                        text = stringResource(R.string.wrong_recall) + " $correctDigits/$currentDigits",
+                        fontSize = 20.sp
+                    )
                 } else {
-                    Text(stringResource(R.string.enter_your_word))
+                    Text(
+                        text = stringResource(R.string.enter_your_word),
+                        fontSize = 20.sp
+                    )
                 }
             },
-            enabled = allowInput,
+            enabled = gameViewModel.allowInput,
             isError = wrongRecall,
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Done
             ),
             keyboardActions = KeyboardActions(
-                onDone = { onKeyboardDone() }
+                onDone = { onSubmit() }
             )
         )
         Spacer(modifier = modifier.height(25.dp))
         Button(
-            onClick = { onKeyboardDone() },
+            onClick = {
+                if (correctRecall || wrongRecall) {
+                    onReturn()
+                } else {
+                    onSubmit()
+                }
+            },
             modifier = modifier
         ) {
             Text(
-                text = stringResource(R.string.submit),
+                text = if (correctRecall || wrongRecall) {
+                    stringResource(R.string.Return)
+                } else {
+                    stringResource(R.string.submit)
+                },
                 fontSize = 20.sp
             )
         }
@@ -111,14 +129,13 @@ fun GameScreenPreview() {
     RapidRecallTheme() {
         GameScreen(
             gameViewModel = viewModel(),
-            sequence = "0123456789",
-            seqLen = 10,
-            currentText = "Test",
-            allowInput = false,
             onUserInputChange = {},
-            correctRecall = false,
+            correctDigits = 10,
+            currentDigits = 10,
+            correctRecall = true,
             wrongRecall = false,
-            onKeyboardDone = {}
+            onSubmit = {},
+            onReturn = {}
         )
     }
 }

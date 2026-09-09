@@ -10,25 +10,37 @@ import com.deming1.rapidrecall.ui.GameUiState
 import kotlinx.coroutines.flow.update
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.launch
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.graphics.Color
+import android.util.Log
 
 class GameViewModel: ViewModel() {
+    private val TAG = "GameViewModel"
+
     private val _uiState = MutableStateFlow(GameUiState())
     val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
     var userInput by mutableStateOf("")
         private set
-    private val _gameStepState = MutableStateFlow<GameStep>(GameStep.PreGameStep(R.string.remember_the_sequence))
-    val gameStepState: StateFlow<GameStep> = _gameStepState.asStateFlow()
+    var allowInput by mutableStateOf(false)
+        private set
+    var currentText by mutableStateOf(AnnotatedString(""))
+        private set
+    private val _gameStepState = MutableStateFlow<TextStep>(TextStep.StringIdStep(R.string.remember_the_sequence))
+    val gameStepState: StateFlow<TextStep> = _gameStepState.asStateFlow()
     private val stringIdSequence = listOf(
-        Pair(GameStep.PreGameStep(R.string.are_you_ready), 750.milliseconds),
-        Pair(GameStep.PreGameStep(R.string.go), 750.milliseconds)
+        Pair(TextStep.StringIdStep(R.string.are_you_ready), 750.milliseconds),
+        Pair(TextStep.StringIdStep(R.string.go), 750.milliseconds)
     )
-    private val stringIdFlow: Flow<GameStep.PreGameStep> = flow {
+    private val stringIdFlow: Flow<TextStep.StringIdStep> = flow {
         delay(1000.milliseconds)
         for ((preGameStep, delayMillis) in stringIdSequence) {
             emit(preGameStep)
@@ -47,7 +59,6 @@ class GameViewModel: ViewModel() {
             currentState.copy(
                 correct = false,
                 wrong = false,
-                wrongIndices = mutableSetOf<Int>(),
                 currentSequence = sb.toString(),
                 currentDigits = seqLen,
                 totalDigits = currentState.totalDigits + seqLen
@@ -59,13 +70,54 @@ class GameViewModel: ViewModel() {
         userInput = input
     }
 
+    fun enableInput() {
+        allowInput = true
+    }
+
+    fun disableInput() {
+        allowInput = false
+    }
+
+    fun updateCurrentText(text: AnnotatedString) {
+        currentText = text
+    }
+
     fun checkUserInput() {
+        var isCorrect = true
         val sequence = _uiState.value.currentSequence
-        for (i in 0..<_uiState.value.currentDigits) {
+        val seqLen = _uiState.value.currentDigits
+        var correctDigits = 0
+        for (i in 0..<seqLen) {
             if (userInput[i] != sequence[i]) {
-                _uiState.value.wrongIndices.add(i)
+                isCorrect = false
+            } else {
+                correctDigits++
             }
         }
+        _uiState.update { currentState ->
+            currentState.copy(
+                correct = isCorrect,
+                wrong = !isCorrect,
+                currentCorrectDigits = correctDigits,
+                totalCorrectDigits = currentState.totalCorrectDigits + correctDigits
+            )
+        }
+
+        currentText = buildAnnotatedString {
+            for (i in 0..<seqLen) {
+                if (userInput[i] != sequence[i]) {
+                    withStyle(style = SpanStyle(color = Color.Red)) {
+                        append(sequence[i])
+                    }
+                } else {
+                    withStyle(style = SpanStyle(color = Color.Green)) {
+                        append(sequence[i])
+                    }
+                }
+            }
+        }
+
+        _gameStepState.value = TextStep.StringStep(currentText)
     }
 
     fun startGame() {
@@ -74,22 +126,23 @@ class GameViewModel: ViewModel() {
         }
     }
 
-    private fun generateSequenceFlow(): Flow<GameStep> {
-        val sequenceFlow = mutableListOf<String>()
+    private fun generateSequenceFlow(): Flow<TextStep> {
+        val sequenceFlow = mutableListOf<AnnotatedString>()
         val sequence = _uiState.value.currentSequence
-        val sb = StringBuilder()
+        val seqLen = _uiState.value.currentDigits
 
-        for (i in 0..<_uiState.value.currentDigits) {
-            sb.clear()
-            sb.append(" ".repeat(i))
-            sb.append(sequence[i])
-            sb.append(" ".repeat(_uiState.value.currentDigits - 1 - i))
-            sequenceFlow.add(sb.toString())
+        for (i in 0..<seqLen) {
+            val str = buildAnnotatedString {
+                append(" ".repeat(i))
+                append(sequence[i])
+                append(" ".repeat(seqLen - 1 - i))
+            }
+            sequenceFlow.add(str)
         }
 
-        val flashSequenceFlow: Flow<GameStep.FlashSequenceStep> = flow {
+        val flashSequenceFlow: Flow<TextStep.StringStep> = flow {
             sequenceFlow.forEach {
-                emit(GameStep.FlashSequenceStep(it))
+                emit(TextStep.StringStep(it))
                 delay(250.milliseconds)
             }
         }
@@ -103,7 +156,11 @@ class GameViewModel: ViewModel() {
                 emit(flashSequence)
             }
 
-            emit(GameStep.PreGameStep(R.string.do_you_recall))
+            emit(TextStep.StringIdStep(R.string.do_you_recall))
         }
+    }
+
+    fun resetCurrentText() {
+        _gameStepState.value = TextStep.StringIdStep(R.string.greet)
     }
 }

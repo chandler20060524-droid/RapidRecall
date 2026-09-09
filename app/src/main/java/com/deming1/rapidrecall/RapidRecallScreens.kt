@@ -9,17 +9,26 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.NavHost
 import androidx.annotation.StringRes
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.composable
 import com.deming1.rapidrecall.ui.GameScreen
 import com.deming1.rapidrecall.ui.StartScreen
+import androidx.compose.ui.text.AnnotatedString
+import com.deming1.rapidrecall.ui.SummaryScreen
 
 enum class RapidRecallScreens(@StringRes val title: Int) {
     Start(title = R.string.start),
@@ -48,6 +57,9 @@ fun RapidRecallApp(
                 onStartButtonClicked = {
                     gameViewModel.generateSequence(it)
                     navController.navigate(RapidRecallScreens.Game.name)
+                },
+                onSummaryIconClicked = {
+                    navController.navigate(RapidRecallScreens.Summary.name)
                 }
             )
         }
@@ -56,40 +68,47 @@ fun RapidRecallApp(
             LaunchedEffect(Unit) {
                 gameViewModel.startGame()
             }
-            val currentStep by gameViewModel.gameStepState.collectAsStateWithLifecycle()
-            var currentText by rememberSaveable { mutableStateOf("") }
-            currentText = when (currentStep) {
-                is GameStep.PreGameStep -> stringResource((currentStep as GameStep.PreGameStep).stringId)
-                is GameStep.FlashSequenceStep -> (currentStep as GameStep.FlashSequenceStep).seqText
-            }
+            val currentStep by gameViewModel.gameStepState.collectAsStateWithLifecycle(TextStep.StringIdStep(R.string.greet))
 
-            val allowInput = when (currentStep) {
-                GameStep.PreGameStep(R.string.do_you_recall) -> true
-                else -> false
+            gameViewModel.updateCurrentText(
+                when (currentStep) {
+                    is TextStep.StringIdStep -> AnnotatedString(stringResource((currentStep as TextStep.StringIdStep).stringId))
+                    is TextStep.StringStep -> (currentStep as TextStep.StringStep).seqText
+                }
+            )
+            if (gameViewModel.currentText == AnnotatedString(stringResource(R.string.do_you_recall))) {
+                gameViewModel.enableInput()
+            } else {
+                gameViewModel.disableInput()
             }
 
             GameScreen(
                 gameViewModel = gameViewModel,
-                sequence = gameUiState.currentSequence,
-                seqLen = gameUiState.currentDigits,
-                currentText = currentText,
-                allowInput = allowInput,
                 onUserInputChange = { userInput ->
                     if (userInput.length <= gameUiState.currentDigits && userInput.all { it.isDigit() }) {
                         gameViewModel.updateUserInput(userInput)
                     }
                 },
+                correctDigits = gameUiState.currentCorrectDigits,
+                currentDigits = gameUiState.currentDigits,
                 correctRecall = gameUiState.correct,
                 wrongRecall = gameUiState.wrong,
-                onKeyboardDone = {
-                    gameViewModel.checkUserInput()
-                    allowInput = false
-                                 },
+                onSubmit = { gameViewModel.checkUserInput() },
+                onReturn = {
+                    gameViewModel.resetCurrentText()
+                    navController.navigate(RapidRecallScreens.Start.name)
+                }
             )
         }
 
         composable(route = RapidRecallScreens.Summary.name) {
-
+            SummaryScreen(
+                percentage = if (gameUiState.totalDigits == 0) {
+                        0.0f
+                } else {
+                    (gameUiState.totalCorrectDigits / gameUiState.totalDigits).toFloat()
+                }
+            )
         }
     }
 }
