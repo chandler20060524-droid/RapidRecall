@@ -108,7 +108,10 @@ fun RapidRecallApp(
                 } else {
                     (gameUiState.totalCorrectDigits / gameUiState.totalDigits).toFloat()
                 },
-                previousAttempts = gameUiState.previousAttempts
+                previousAttempts = gameUiState.previousAttempts,
+                onBackButtonClicked = {
+                    navController.navigate(RapidRecallScreens.Start.name)
+                }
             )
         }
     }
