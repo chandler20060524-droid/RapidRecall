@@ -19,4 +19,6 @@
     <string name="do_you_recall">🤔 Do you recall?</string>
     <string name="submit">Submit</string>
     <string name="Return">Return</string>
+    <string name="overall_acc">🎯 Overall Accuracy:</string>
+    <string name="previous_attempts">🏒 Previous Attempts:</string>
 </resources>

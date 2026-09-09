@@ -6,7 +6,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Alignment
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.ui.graphics.Color
@@ -20,35 +23,104 @@ import com.deming1.rapidrecall.ui.theme.RapidRecallTheme
 import androidx.compose.foundation.layout.size
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.lazy.items
+import androidx.compose.ui.res.stringResource
+import com.deming1.rapidrecall.R
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.History
+import com.deming1.rapidrecall.AttemptData
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 
 @Composable
 fun SummaryScreen(
-    percentage: Float,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    percentage: Float = 0.0f,
+    onBackButtonClicked: () -> Unit = {},
+    previousAttempts: List<AttemptData> = listOf()
 ) {
+    Box {
+        IconButton(
+            onClick = onBackButtonClicked,
+            modifier = Modifier.align(Alignment.TopStart)
+        ) {
+            Icon(
+                imageVector = Icons.Default.ArrowBackIosNew,
+                contentDescription = "History"
+            )
+        }
+    }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
             .fillMaxSize()
+            .padding(
+                top = 50.dp,
+                start = 30.dp,
+                end = 30.dp,
+                bottom = 30.dp)
     ) {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
+        Column(
+            modifier = modifier
                 .fillMaxWidth()
-                .weight(0.3f)
+                .fillMaxHeight(0.3f)
         ) {
-            PercentageRing(
-                percentage = percentage,
-                modifier = modifier.size(180.dp)
+            Text(
+                text = stringResource(R.string.overall_acc),
+                fontSize = 20.sp
             )
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(0.3f)
+            ) {
+                PercentageRing(
+                    percentage = percentage,
+                    modifier = modifier.size(180.dp)
+                )
+            }
         }
-
-        LazyColumn(
-            modifier = Modifier
+        Column(
+            modifier = modifier
                 .fillMaxWidth()
-                .weight(0.7f)
+                .fillMaxHeight(0.6f)
         ) {
-//            items() {}
+            Text(
+                text = stringResource(R.string.previous_attempts),
+                fontSize = 20.sp
+            )
+            Spacer(modifier = modifier.height(10.dp))
+            LazyColumn(
+                modifier = modifier
+            ) {
+                itemsIndexed(
+                    items = previousAttempts
+                ) { index, item ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp), // Space between frames
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                    ) {
+                        Text(
+                            text = buildAnnotatedString {
+                                append("Attempt ${index + 1}: ")
+                                append(item.sequence)
+                                append(" Score: ${item.correctDigits}/${item.totalDigits}")
+                            }
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -89,7 +161,32 @@ fun PercentageRing(
 fun SummaryScreenPreview() {
     RapidRecallTheme() {
         SummaryScreen(
-            percentage = 0.3f
+            previousAttempts = listOf(
+                AttemptData(
+                    sequence = buildAnnotatedString {
+                        withStyle(style = SpanStyle(color = Color.Green)) {
+                            append("12345")
+                        }
+                        withStyle(style = SpanStyle(color = Color.Red)) {
+                            append("67890")
+                        }
+                    },
+                    correctDigits = 5,
+                    totalDigits = 10
+                ),
+                AttemptData(
+                    sequence = buildAnnotatedString {
+                        withStyle(style = SpanStyle(color = Color.Green)) {
+                            append("12345")
+                        }
+                        withStyle(style = SpanStyle(color = Color.Red)) {
+                            append("67890")
+                        }
+                    },
+                    correctDigits = 5,
+                    totalDigits = 10
+                ),
+            )
         )
     }
 }

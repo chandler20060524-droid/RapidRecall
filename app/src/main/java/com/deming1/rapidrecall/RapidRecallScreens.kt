@@ -107,7 +107,8 @@ fun RapidRecallApp(
                         0.0f
                 } else {
                     (gameUiState.totalCorrectDigits / gameUiState.totalDigits).toFloat()
-                }
+                },
+                previousAttempts = gameUiState.previousAttempts
             )
         }
     }

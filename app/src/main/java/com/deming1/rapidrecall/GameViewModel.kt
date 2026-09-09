@@ -94,14 +94,6 @@ class GameViewModel: ViewModel() {
                 correctDigits++
             }
         }
-        _uiState.update { currentState ->
-            currentState.copy(
-                correct = isCorrect,
-                wrong = !isCorrect,
-                currentCorrectDigits = correctDigits,
-                totalCorrectDigits = currentState.totalCorrectDigits + correctDigits
-            )
-        }
 
         currentText = buildAnnotatedString {
             for (i in 0..<seqLen) {
@@ -117,6 +109,19 @@ class GameViewModel: ViewModel() {
             }
         }
 
+        _uiState.update { currentState ->
+            currentState.copy(
+                correct = isCorrect,
+                wrong = !isCorrect,
+                currentCorrectDigits = correctDigits,
+                totalCorrectDigits = currentState.totalCorrectDigits + correctDigits,
+                previousAttempts = currentState.previousAttempts + AttemptData(
+                    sequence = currentText,
+                    correctDigits = correctDigits,
+                    totalDigits = seqLen
+                )
+            )
+        }
         _gameStepState.value = TextStep.StringStep(currentText)
     }
 

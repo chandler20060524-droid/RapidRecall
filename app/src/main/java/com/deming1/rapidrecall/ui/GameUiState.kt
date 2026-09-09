@@ -1,5 +1,7 @@
 package com.deming1.rapidrecall.ui
 
+import com.deming1.rapidrecall.AttemptData
+
 data class GameUiState(
     val currentSequence: String = "",
     val correct: Boolean = false,
@@ -8,6 +10,5 @@ data class GameUiState(
     val currentDigits: Int = 0,
     val totalCorrectDigits: Int = 0,
     val totalDigits: Int = 0,
-    val previousCorrectDigits: MutableList<Int> = mutableListOf(),
-    val previousDigits: MutableList<Int> = mutableListOf()
+    val previousAttempts: List<AttemptData> = mutableListOf(),
 )
