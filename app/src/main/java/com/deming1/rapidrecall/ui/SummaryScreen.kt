@@ -118,8 +118,7 @@ fun SummaryScreen(
                     ) {
                         Text(
                             text = buildAnnotatedString {
-                                append("Attempt ${index + 1} - ${item.time}:\n")
-                                append("Target Sequence: ")
+                                append("Attempt ${index + 1}: ")
                                 append(item.sequence)
                                 append("\nYour Answer: ${item.userInput}")
                                 append("\nScore: ${item.correctDigits}/${item.totalDigits}")
@@ -170,7 +169,6 @@ fun SummaryScreenPreview() {
         val pa = mutableListOf<AttemptData>()
         for (i in 0..20) {
             pa.add(AttemptData(
-                time = "Testing Time",
                 userInput = "1234512345",
                 sequence = buildAnnotatedString {
                     withStyle(style = SpanStyle(color = Color.Green)) {
