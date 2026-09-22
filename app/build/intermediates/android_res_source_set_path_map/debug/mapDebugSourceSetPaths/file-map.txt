@@ -1,0 +1,8 @@
+com.deming1.rapidrecall.app-pngs-0 E:\Projects\cmput301\deming1-RapidRecall\app\build\generated\res\pngs\debug
+com.deming1.rapidrecall.app-updated_navigation_xml-1 E:\Projects\cmput301\deming1-RapidRecall\app\build\generated\updated_navigation_xml\debug
+com.deming1.rapidrecall.app-packageDebugResources-2 E:\Projects\cmput301\deming1-RapidRecall\app\build\intermediates\incremental\debug\packageDebugResources\merged.dir
+com.deming1.rapidrecall.app-packageDebugResources-3 E:\Projects\cmput301\deming1-RapidRecall\app\build\intermediates\incremental\debug\packageDebugResources\stripped.dir
+com.deming1.rapidrecall.app-debug-4 E:\Projects\cmput301\deming1-RapidRecall\app\build\intermediates\merged_res\debug\mergeDebugResources
+com.deming1.rapidrecall.app-debug-5 E:\Projects\cmput301\deming1-RapidRecall\app\src\debug\res
+com.deming1.rapidrecall.app-main-6 E:\Projects\cmput301\deming1-RapidRecall\app\src\main\res
+gradleHome-0 C:\Users\chand\.gradle
