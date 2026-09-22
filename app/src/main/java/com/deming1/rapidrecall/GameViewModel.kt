@@ -21,10 +21,31 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.graphics.Color
 import com.deming1.rapidrecall.ui.TextStep
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
+/*
+* Description:
+* The GameViewModel extends the ViewModel class, which persists during activities recreations, unlike
+* standard class who clears themselves. It stores the entire game data inside a private mutable State
+* called _uiState, then exposed to UI functions as a MutableStateFlow and collected as an immutable
+* State. Its data can be accessed at any instant by the UI function; the GameViewModel class also
+* stores all the necessary methods essential for the core game logics, such as generating sequence,
+* checking user input and updating UI data.
+*
+* Design Rationale:
+* I designed this class to inherit from ViewModel class because it is part of the design pattern
+* UDF architecture in Android development, where ViewModel extended class stores, handles and processes
+* all the essential data and logics so that they will not be cleared during events like screen
+* rotations; they are also memory safe since they will be destroyed as soon as the screen is destroyed.
+*
+* Outstanding Issue: None
+* */
 class GameViewModel: ViewModel() {
     private val TAG = "GameViewModel"
 
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+    val currentTime = LocalDateTime.now().format(formatter)
     private val _uiState = MutableStateFlow(GameUiState())
     val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
     var userInput by mutableStateOf("")
@@ -59,6 +80,7 @@ class GameViewModel: ViewModel() {
                 correct = false,
                 wrong = false,
                 currentSequence = sb.toString(),
+                currentTime = currentTime,
                 currentDigits = seqLen,
                 totalDigits = currentState.totalDigits + seqLen
             )
@@ -87,7 +109,7 @@ class GameViewModel: ViewModel() {
         val seqLen = _uiState.value.currentDigits
         var correctDigits = 0
         for (i in 0..<seqLen) {
-            if (userInput[i] != sequence[i]) {
+            if (i >= userInput.length || userInput[i] != sequence[i]) {
                 isCorrect = false
             } else {
                 correctDigits++
@@ -96,7 +118,7 @@ class GameViewModel: ViewModel() {
 
         currentText = buildAnnotatedString {
             for (i in 0..<seqLen) {
-                if (userInput[i] != sequence[i]) {
+                if (i >= userInput.length || userInput[i] != sequence[i]) {
                     withStyle(style = SpanStyle(color = Color.Red)) {
                         append(sequence[i])
                     }
@@ -115,6 +137,7 @@ class GameViewModel: ViewModel() {
                 currentCorrectDigits = correctDigits,
                 totalCorrectDigits = currentState.totalCorrectDigits + correctDigits,
                 previousAttempts = currentState.previousAttempts + AttemptData(
+                    time = _uiState.value.currentTime,
                     userInput = userInput,
                     sequence = currentText,
                     correctDigits = correctDigits,

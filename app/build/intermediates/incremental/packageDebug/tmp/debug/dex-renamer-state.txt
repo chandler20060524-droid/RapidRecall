@@ -1,4 +1,4 @@
-#Thu Sep 10 22:34:47 ADT 2026
+#Tue Sep 22 02:29:59 ADT 2026
 base.0=E\:\\Projects\\cmput301\\deming1-RapidRecall\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes.dex
 base.1=E\:\\Projects\\cmput301\\deming1-RapidRecall\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\0\\classes.dex
 base.2=E\:\\Projects\\cmput301\\deming1-RapidRecall\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\13\\classes.dex

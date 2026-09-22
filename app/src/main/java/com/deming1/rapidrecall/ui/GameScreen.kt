@@ -25,6 +25,10 @@ import com.deming1.rapidrecall.GameViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.material3.Button
 
+/*
+* The GameScreen function handles all the UI components in the game screen, such as the buffer texts,
+* the flashing sequences and final results with color indicators.
+* */
 @Composable
 fun GameScreen(
     gameViewModel: GameViewModel,

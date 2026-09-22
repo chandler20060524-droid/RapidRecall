@@ -38,6 +38,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.foundation.layout.Row
 
+/*
+* The SummaryScreen function manages all the UI components on the Summary Screen, which shows
+* information like overall accuracy and previous attempts.
+* */
 @Composable
 fun SummaryScreen(
     modifier: Modifier = Modifier,
@@ -118,7 +122,8 @@ fun SummaryScreen(
                     ) {
                         Text(
                             text = buildAnnotatedString {
-                                append("Attempt ${index + 1}: ")
+                                append("Attempt ${index + 1} - ${item.time}:\n")
+                                append("Target Sequence: ")
                                 append(item.sequence)
                                 append("\nYour Answer: ${item.userInput}")
                                 append("\nScore: ${item.correctDigits}/${item.totalDigits}")
@@ -169,6 +174,7 @@ fun SummaryScreenPreview() {
         val pa = mutableListOf<AttemptData>()
         for (i in 0..20) {
             pa.add(AttemptData(
+                time = "Testing Time",
                 userInput = "1234512345",
                 sequence = buildAnnotatedString {
                     withStyle(style = SpanStyle(color = Color.Green)) {
