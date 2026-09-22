@@ -2,7 +2,7 @@
 
 ## Description:
 
-Rapid Recall is a simple android game that challenges the user to memorize a selected sequence of number in
+Rapid Recall is a simple android game that challenges the users to memorize a selected sequence of number in
 limited time, and then recalls the sequence to find out whether they have recall correctly or not. 
 
 ## Features:
@@ -24,6 +24,6 @@ limited time, and then recalls the sequence to find out whether they have recall
 -   **User-Friendly Interface:** The app provided a simple and
     attractive user interface to enhance ease of use.
 
-## Note
+## Note:
 
-Due to the design, the records of this game is only session persistent.
+Due to game design, the records of this game is only session persistent.
