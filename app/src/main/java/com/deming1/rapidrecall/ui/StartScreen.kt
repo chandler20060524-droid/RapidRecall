@@ -32,10 +32,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.History
 
-/*
-* The StartScreen function manages all the UI components on the Start Screen. Such as a difficulty
-* slider, start button and view history (summary) button.
-* */
 @Composable
 fun StartScreen(
     onStartButtonClicked: (Int) -> Unit,

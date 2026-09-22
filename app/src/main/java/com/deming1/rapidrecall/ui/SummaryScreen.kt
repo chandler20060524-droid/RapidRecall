@@ -38,10 +38,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.foundation.layout.Row
 
-/*
-* The SummaryScreen function manages all the UI components on the Summary Screen, which shows
-* information like overall accuracy and previous attempts.
-* */
 @Composable
 fun SummaryScreen(
     modifier: Modifier = Modifier,
