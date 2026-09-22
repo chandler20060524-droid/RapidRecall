@@ -18,6 +18,18 @@ import androidx.compose.ui.text.AnnotatedString
 import com.deming1.rapidrecall.ui.SummaryScreen
 import com.deming1.rapidrecall.ui.TextStep
 
+/*
+* Description:
+* The RapidRecallScreens enum class stores three screens with their string ID as their unique titles
+* respectively. They are passed into navController.navigate() method in order to navigate between
+* screens.
+*
+* Design Rationale:
+* I designed an enum class to store screen name because it is a standard method to manage screens,
+* which helps prevent illegal names that crashes the app when passed into navigate() method.
+*
+* Outstanding Issue: None
+ */
 enum class RapidRecallScreens(@StringRes val title: Int) {
     Start(title = R.string.start),
     Game(title = R.string.game),

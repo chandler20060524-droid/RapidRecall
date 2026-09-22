@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">RapidRecall</string>
+    <string name="app_name">deming1-RapidRecall</string>
     <string name="greet">Welcome to Rapid Recall!</string>
     <string name="seq_length">Current Sequence Length: </string>
     <string name="very_easy">😇 Very Easy!</string>
